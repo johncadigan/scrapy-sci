@@ -6,6 +6,8 @@
 # http://doc.scrapy.org/en/latest/topics/items.html
 
 import scrapy
+import webbrowser
+import threading
 
 
 class Wallpaper(scrapy.Item):
@@ -18,11 +20,18 @@ class Wallpaper(scrapy.Item):
     favorites = scrapy.Field()
     views = scrapy.Field()    
     download_link = scrapy.Field()
+    filetype = scrapy.Field()
     colors = scrapy.Field()
     x_resolution = scrapy.Field()
     y_resolution = scrapy.Field()    
     descriptors = scrapy.Field()
     comments = scrapy.Field()
-
+    
+    
+    @classmethod
+    def review(self,dic):
+        x=lambda: webbrowser.open_new(dic['origin'])
+        t=threading.Thread(target=x)
+        t.start()
     
 

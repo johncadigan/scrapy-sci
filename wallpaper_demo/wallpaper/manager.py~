@@ -4,11 +4,13 @@ import os
 from os import listdir
 from os.path import isfile, join, isdir
 from glob import glob
+from collections import defaultdict
 import sys
 import re
 import imp
 import inspect
 import json
+import new
 import ConfigParser
 
 from sciscrapy.classifier import LogisticClassifier
@@ -148,11 +150,52 @@ class Manager(object):
                 
     
     def review_file(self, classifier_names, data_set):
-        classifications = defaultdict([])
+        classifications_dic = defaultdict(dict)
+        all_classifications = []
         for classifier_name in classifier_names:
             if self.classifiers[classifier_name]['info']['settings']:
                 config = ConfigParser.RawConfigParser()
-                config.read(self.classifiers[classifier_name]['settings'])  
+                config.read(self.classifiers[classifier_name]['settings'])
+                classifications = config.get("Classifier", "classes").split(",")
+                classifications_dic[classifier_name]['classifications'] = []
+                for classification in classifications:
+                    classifications_dic[classifier_name]['classifications'].append(classification)
+                    all_classifications.append(classification)
+        auto_default_class = filter(lambda a: data_set.find(a) > -1, all_classifications)
+        if len(auto_default_class) == 1:
+            print "Default class is {0}".format(auto_default_class[0])
+            default_class = auto_default_class[0]
+        else:
+            isclass = False
+            while isclass == False:
+                default_class = raw_input("Please input default class for this data set").strip()
+                isclass = all_classifications.find(default_class) > 0
+        no_files = {}
+        print classifications_dic
+        for classifier in classifications_dic['classifications'].keys():
+            reviewed = self.classifiers[classifier]['reviewed']
+            for classification in list(classifications_dic['classifications'][classifier]):
+                no_files[classification] = len([x for x in reviewed if x.find(classification) >= 0])
+        with open(data_set, "r") as json_file:
+            json_string = "".join("".join(json_file.readlines()).split("\n"))
+            items = json.loads(json_string)
+        for item in items:
+            self.item_class.review(item)
+            for classifier in classifications_dic.keys():
+                choices = {0: default_class}
+                prompt= "Change classification from {0}\n0.Keep it the same\n".format(default_class)
+                i = 0               
+                for classification in classifications_dic[classifier]['classifications']:
+                    if classification != default_class:
+                        i+=1
+                        choices[i] = classification
+                        prompt+= "{0}. {1}\n".format(i, classification)
+                print no_files
+                choice = int(raw_input(prompt))
+                no_files[choices[choice]]+=1
+                with open("data/{0}/{1}0{2}.json".format(classifier, choices[choice], no_files[choices[choice]]), "wb") as new_f:
+                    new_f.write(json.dumps(item))
+        
     
     
     def review_classifier_data(self, classifier_name):
