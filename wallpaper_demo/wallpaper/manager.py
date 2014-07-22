@@ -49,6 +49,7 @@ class Manager(object):
                 self.classifiers[classifier]['reviewed'] = reviewed_files
                 self.classifiers[classifier]['unreviewed'] = unreviewed_files
                 fe_name = feature_extractor[0].split("/")[-1].split(".")[0]
+                print fe_name
                 f, filename, description = imp.find_module(fe_name, ["data"+"/"+classifier])
                 module = imp.load_module("data" + "." + classifier, f, filename, description)
                 classifier_features = [extractor[1] for extractor in inspect.getmembers(module, predicate=inspect.isclass) if extractor[0].find(fe_name)== 0][0]
@@ -210,9 +211,11 @@ class Manager(object):
         cont_work = True
         while cont_work:        
             if choice < len(self.classifiers.keys()):
-                self.review_file([classifier_name], choices[i])
+                self.review_file([classifier_name], choices[choice])
             elif choice == i+1:
                 cont_work = False
+    
+    
     
     
     def classifier_menu(self, classifier_name):
@@ -251,7 +254,7 @@ class Manager(object):
                 self.classifier_menu(choices[choice])
                 cont_generate = 1
             if choice == len(self.classifiers.keys()):
-                print "Currently not supported\n"
+                self
                 cont_prog = 1
             if choice > len(self.classifiers.keys()):
                 sys.exit(0)
