@@ -10,11 +10,50 @@ class WallbaseSearch(CrawlSpider):
     name = "wallbase"
     allowed_domains = ["wallbase.cc"]
     start_urls = [
-    "http://wallbase.cc/search?q=women&color=&section=wallpapers&q=women&res_opt=eqeq&res=0x0&order_mode=desc&thpp=32&purity=010&board=21&aspect=0.00",
-    "http://wallbase.cc/search?q=butt&color=&section=wallpapers&q=butt&res_opt=eqeq&res=0x0&order_mode=desc&thpp=32&purity=010&board=21&aspect=0.00",
-    "http://wallbase.cc/search?q=ass&color=&section=wallpapers&q=ass&res_opt=eqeq&res=0x0&order_mode=desc&thpp=32&purity=010&board=21&aspect=0.00",
-    "http://wallbase.cc/search?q=ass&color=&section=wallpapers&q=ass&res_opt=eqeq&res=0x0&order_mode=desc&thpp=32&purity=010&board=21&aspect=0.00",
-    "http://wallbase.cc/search?q=boobs&color=&section=wallpapers&q=boobs&res_opt=eqeq&res=0x0&order_mode=desc&thpp=32&purity=010&board=21&aspect=0.00"
+    #Improper women
+##    "http://wallbase.cc/search?q=women&color=&section=wallpapers&q=women&res_opt=eqeq&res=0x0&order_mode=desc&thpp=60&purity=010&board=21&aspect=0.00",
+##    "http://wallbase.cc/search?q=butt&color=&section=wallpapers&q=butt&res_opt=eqeq&res=0x0&order_mode=desc&thpp=60&purity=010&board=21&aspect=0.00",
+##    "http://wallbase.cc/search?q=ass&color=&section=wallpapers&q=ass&res_opt=eqeq&res=0x0&order_mode=desc&thpp=60&purity=010&board=21&aspect=0.00",
+##    "http://wallbase.cc/search?q=boobs&color=&section=wallpapers&q=boobs&res_opt=eqeq&res=0x0&order_mode=desc&thpp=60&purity=010&board=21&aspect=0.00"
+##    "http://wallbase.cc/search?q=sexy%20women&color=&section=wallpapers&q=sexy%20women&res_opt=eqeq&res=0x0&order_mode=desc&thpp=60&purity=010&board=21&aspect=0.00"    
+    #Proper women
+##    "http://wallbase.cc/search?q=actress&color=&section=wallpapers&q=actress&res_opt=eqeq&res=0x0&order_mode=desc&thpp=60&purity=100&board=21&aspect=0.00",
+##    "http://wallbase.cc/search?q=model&color=&section=wallpapers&q=model&res_opt=eqeq&res=0x0&order_mode=desc&thpp=60&purity=100&board=21&aspect=0.00",
+##    "http://wallbase.cc/search?q=butt&color=&section=wallpapers&q=butt&res_opt=eqeq&res=0x0&order_mode=desc&thpp=60&purity=100&board=21&aspect=0.00",
+##    "http://wallbase.cc/search?q=sexy%20women&color=&section=wallpapers&q=sexy%20women&res_opt=eqeq&res=0x0&order_mode=desc&thpp=60&purity=100&board=21&aspect=0.00",
+##    "http://wallbase.cc/search?q=women&color=&section=wallpapers&q=women&res_opt=eqeq&res=0x0&order_mode=desc&thpp=60&purity=100&board=21&aspect=0.00"
+##    #Seed categories
+##    "http://wallbase.cc/search?q=abstract&color=&section=wallpapers&q=abstract&res_opt=eqeq&res=0x0&order_mode=desc&thpp=60&purity=100&board=21&aspect=0.00",
+##    "http://wallbase.cc/search?q==(animal)&color=&section=wallpapers&q==(anime)&res_opt=eqeq&res=0x0&order_mode=desc&thpp=60&purity=100&board=21&aspect=0.00",
+##    "http://wallbase.cc/search?q==(anime)&color=&section=wallpapers&q==(anime)&res_opt=eqeq&res=0x0&order_mode=desc&thpp=60&purity=100&board=21&aspect=0.00",
+##    "http://wallbase.cc/search?q==(artistic)&color=&section=wallpapers&q==(anime)&res_opt=eqeq&res=0x0&order_mode=desc&thpp=60&purity=100&board=21&aspect=0.00",
+##    "http://wallbase.cc/search?q==(cgi)&color=&section=wallpapers&q==(anime)&res_opt=eqeq&res=0x0&order_mode=desc&thpp=60&purity=100&board=21&aspect=0.00",
+##    "http://wallbase.cc/search?q==(cartoon)&color=&section=wallpapers&q==(anime)&res_opt=eqeq&res=0x0&order_mode=desc&thpp=60&purity=100&board=21&aspect=0.00"
+##    "http://wallbase.cc/search?q==(celebrity)&color=&section=wallpapers&q==(anime)&res_opt=eqeq&res=0x0&order_mode=desc&thpp=60&purity=100&board=21&aspect=0.00",
+##    "http://wallbase.cc/search?q==(comics)&color=&section=wallpapers&q==(anime)&res_opt=eqeq&res=0x0&order_mode=desc&thpp=60&purity=100&board=21&aspect=0.00",
+##    "http://wallbase.cc/search?q==(dark)&color=&section=wallpapers&q==(anime)&res_opt=eqeq&res=0x0&order_mode=desc&thpp=60&purity=100&board=21&aspect=0.00",
+##    "http://wallbase.cc/search?q==(earth)&color=&section=wallpapers&q==(anime)&res_opt=eqeq&res=0x0&order_mode=desc&thpp=60&purity=100&board=21&aspect=0.00",
+##    "http://wallbase.cc/search?q==(fantasy)&color=&section=wallpapers&q==(anime)&res_opt=eqeq&res=0x0&order_mode=desc&thpp=60&purity=100&board=21&aspect=0.00",
+##    "http://wallbase.cc/search?q==(food)&color=&section=wallpapers&q==(anime)&res_opt=eqeq&res=0x0&order_mode=desc&thpp=60&purity=100&board=21&aspect=0.00"
+##    "http://wallbase.cc/search?q==(game)&color=&section=wallpapers&q==(anime)&res_opt=eqeq&res=0x0&order_mode=desc&thpp=60&purity=100&board=21&aspect=0.00",
+##    "http://wallbase.cc/search?q==(holiday)&color=&section=wallpapers&q==(anime)&res_opt=eqeq&res=0x0&order_mode=desc&thpp=60&purity=100&board=21&aspect=0.00",
+##    "http://wallbase.cc/search?q==(humor)&color=&section=wallpapers&q==(anime)&res_opt=eqeq&res=0x0&order_mode=desc&thpp=60&purity=100&board=21&aspect=0.00",
+##    "http://wallbase.cc/search?q==(man)&color=&section=wallpapers&q==(anime)&res_opt=eqeq&res=0x0&order_mode=desc&thpp=60&purity=100&board=21&aspect=0.00",
+##    "http://wallbase.cc/search?q==(military)&color=&section=wallpapers&q==(anime)&res_opt=eqeq&res=0x0&order_mode=desc&thpp=60&purity=100&board=21&aspect=0.00",
+##    "http://wallbase.cc/search?q==(misc)&color=&section=wallpapers&q==(anime)&res_opt=eqeq&res=0x0&order_mode=desc&thpp=60&purity=100&board=21&aspect=0.00",
+##    "http://wallbase.cc/search?q==(movie)&color=&section=wallpapers&q==(anime)&res_opt=eqeq&res=0x0&order_mode=desc&thpp=60&purity=100&board=21&aspect=0.00",
+##    "http://wallbase.cc/search?q==(music)&color=&section=wallpapers&q==(anime)&res_opt=eqeq&res=0x0&order_mode=desc&thpp=60&purity=100&board=21&aspect=0.00",
+##    "http://wallbase.cc/search?q==(pattern)&color=&section=wallpapers&q==(anime)&res_opt=eqeq&res=0x0&order_mode=desc&thpp=60&purity=100&board=21&aspect=0.00",
+##    "http://wallbase.cc/search?q==(photography)&color=&section=wallpapers&q==(anime)&res_opt=eqeq&res=0x0&order_mode=desc&thpp=60&purity=100&board=21&aspect=0.00",
+##    "http://wallbase.cc/search?q==(products)&color=&section=wallpapers&q==(anime)&res_opt=eqeq&res=0x0&order_mode=desc&thpp=60&purity=100&board=21&aspect=0.00",
+##    "http://wallbase.cc/search?q==(religious)&color=&section=wallpapers&q==(anime)&res_opt=eqeq&res=0x0&order_mode=desc&thpp=60&purity=100&board=21&aspect=0.00",
+##    "http://wallbase.cc/search?q==(science%20fiction)&color=&section=wallpapers&q==(science%20fiction)&res_opt=eqeq&res=0x0&order_mode=desc&thpp=32&purity=100&board=21&aspect=0.00",
+##    "http://wallbase.cc/search?q==(sports)&color=&section=wallpapers&q==(anime)&res_opt=eqeq&res=0x0&order_mode=desc&thpp=60&purity=100&board=21&aspect=0.00",
+##    "http://wallbase.cc/search?q==(tv)&color=&section=wallpapers&q==(anime)&res_opt=eqeq&res=0x0&order_mode=desc&thpp=60&purity=100&board=21&aspect=0.00",
+##    "http://wallbase.cc/search?q==(technology)&color=&section=wallpapers&q==(anime)&res_opt=eqeq&res=0x0&order_mode=desc&thpp=60&purity=100&board=21&aspect=0.00",
+##    "http://wallbase.cc/search?q==(vehicles)&color=&section=wallpapers&q==(anime)&res_opt=eqeq&res=0x0&order_mode=desc&thpp=60&purity=100&board=21&aspect=0.00",
+##    "http://wallbase.cc/search?q==(video)&color=&section=wallpapers&q==(anime)&res_opt=eqeq&res=0x0&order_mode=desc&thpp=60&purity=100&board=21&aspect=0.00",
+##    "http://wallbase.cc/search?q==(weapons)&color=&section=wallpapers&q==(anime)&res_opt=eqeq&res=0x0&order_mode=desc&thpp=60&purity=100&board=21&aspect=0.00"      
     ]
     rules = (
 
@@ -33,8 +72,8 @@ class WallbaseSearch(CrawlSpider):
         wallpaper['views'] = int("".join(response.xpath('//div[contains(@class, "centr")]/div[contains(@class, "l1")]//span[contains(@class, "highl")]/text()').extract()[0].split(",")))
         wallpaper['download_link'] = response.xpath('//div[contains(@class, "content")]/img[contains(@class, "wall")]/@src').extract()[0]
         colors = response.xpath('//div[contains(@class, "palette")]/a/@style').extract()
-        wallpaper['filetype'] = wallpaper['download_link'].split('.')[-1]
-        wallpaper['colors'] = ["#" + hex for n, hex in [color.split('#') for color in colors]]
+        wallpaper['filetype'] = wallpaper['download_link'].split('.')[-1] #get the last item
+        wallpaper['colors'] = ["#" + hex[0:-1] for n, hex in [color.split('#') for color in colors]] #-1 removes semi-colon
         res = response.xpath('//a[contains(@class, "reso")]/div[contains(@class, "l1")]/text()').extract()[0]
         wallpaper['x_resolution'] = int(res.split('x')[0])
         wallpaper['y_resolution'] = int(res.split('x')[1])
@@ -42,6 +81,3 @@ class WallbaseSearch(CrawlSpider):
         wallpaper['comments'] = [""] 
         yield wallpaper  
  
-        #for sel in response.xpath('//img[contains(@data-original, ".jpg")]':
-        #    id = re.findall('([0-9]*\.(?:jpg|jpeg|png))', sel)[0].split('.')[0]
-        #    link = "http://wallbase.cc/wallpaper/"+ id

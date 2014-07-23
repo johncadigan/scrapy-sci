@@ -1,22 +1,19 @@
-from features import FeatureExtractor
+from sciscrapy.features import FeatureExtractor
 
 class DataFeatures(FeatureExtractor):
     
     def __init__(self):
-        super(WallpaperFeatures, self).__init__()
+        super(DataFeatures, self).__init__()
     
     
-    def color_features(self, datum):
-        features = {}
-        for color in datum['colors']:
-            features['color({0})'.format(color.encode('utf-8'))] = 1.0
+    def dimension_features(self, datum):
+        x = float(datum["x_resolution"])
+        y = float(datum["y_resolution"])
+        features = {"x_dim" : x, "y_dim": y, "combined": x*y}
         return features
     
-    def descriptor_features(self, datum):
-        features = {'named' : 0.0}
-        for descriptor in datum['descriptors']:
-            features["tag({0})".format(descriptor.encode('utf-8'))] = 1.0
-            if descriptor.encode('utf-8')[0].isupper(): features['named'] = 1.0
+    def viewer_features(self, datum):
+        features = {'views' : float(datum['views']), "favorites" : float(datum['favorites'])}
         return features
     
     

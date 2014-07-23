@@ -1,0 +1,37 @@
+[Classifier]
+classes = abstract,animal,anime,artistic,cartoon,celebrity,cgi,comics,dark,earth,fantasy,food,game,holiday,humor,man,men,military,misc,movie,multi,music,pattern,photography,products,religious,sci,sports,technology,tv,vehicles,video,weapons,women
+abstract = True
+animal = True
+anime = True
+artistic = True
+cartoon = True
+celebrity = True
+cgi = True
+comics = True
+dark = True
+earth = True
+fantasy = True
+food = True
+game = True
+holiday = True
+humor = True
+man = True
+men = True
+military = True
+misc = True
+movie = True
+multi = True
+music = True
+pattern = True
+photography = True
+products = True
+religious = True
+sci = True
+sports = True
+technology = True
+tv = True
+vehicles = True
+video = True
+weapons = True
+women = True
+
