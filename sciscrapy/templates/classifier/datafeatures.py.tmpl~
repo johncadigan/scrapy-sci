@@ -2,7 +2,7 @@
 
 from sciscrapy.features import FeatureExtractor
 
-class ${classifier_name}Features(FeatureExtractor):
+class ${ClassifierName}Features(FeatureExtractor):
     
     def __init__(self):
         super(DataFeatures, self).__init__()
