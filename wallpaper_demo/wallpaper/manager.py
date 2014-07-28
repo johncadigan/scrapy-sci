@@ -20,8 +20,8 @@ from shutil import copytree, ignore_patterns
 from scrapy.utils.template import render_templatefile, string_camelcase
 
 import sciscrapy
-from sciscrapy.classifier import LogisticClassifier
-from sciscrapy.status import Status
+from sciscrapy.classifier import LogisticClassifier, ClassifierCreator
+from sciscrapy.status import Status, Reader
 
 TEMPLATES_PATH = join(sciscrapy.__path__[0], 'templates')
 CLASSIFIERS_PATH = os.getcwd() + os.sep + "data"
@@ -72,58 +72,42 @@ class Manager(object):
                 cont_work = False
     
     def test_classifier(self, classifier_name):
-        classifications = self.status.classifiers[classifier_name]['classifications']
-        unreviewed_possible = True
-        reviewed_possible = True
-        data = {c : {} for c in classifications}
-        for classification in classifications:
-            reviewed = [f for f in self.status.classifiers[classifier_name]['reviewed'] if f.find(classification) >= 0]
-            unreviewed = [f for f in self.status.classifiers[classifier_name]['unreviewed'] if f.find(classification) >= 0]
-            data[classification]["reviewed"]=reviewed
-            data[classification]["unreviewed"]=unreviewed
-            if len(reviewed) == 0: reviewed_possible = False
-            if len(unreviewed) == 0: unreviewed_possible = False
+        CC = ClassifierCreator(self.status.classifiers[classifier_name])
         prompt = "Possible options:\n"
-        if unreviewed_possible: prompt+= "0. Train and test on unreviewed data\n"
-        if reviewed_possible: prompt+= "1. Train and test on reviewed data\n"
-        prompt += "2. Return to classifier menu\n\n"
+        if CC.unreviewed: prompt+= "0. Train and test on unreviewed data\n"
+        if CC.reviewed: prompt+= "1. Train and test on reviewed data\n"
+        if CC.possible: prompt+= "2. Train and test with all possible data\n"
+        prompt += "3. Return to classifier menu\n\n"
         cont_work = True
         while cont_work:
             choice = int(raw_input(prompt))
-            if choice== 0 and unreviewed_possible:
+            if choice== 0 and CC.unreviewed:
                 tests = int(raw_input("Please input number of desired test trials"))
-                classifier_data = []
-                for classification in data.keys():
-                    for f in data[classification]['unreviewed']:
-                        json_file = open(f, "r")
-                        json_dics = json.loads("".join(json_file.readlines()))
-                        classifier_data += [(json_dic, classification) for json_dic in json_dics]
-                lc = LogisticClassifier(self.status.classifiers[classifier_name]['features'], classifier_data, data.keys())
-                print "Average accuracy over {0} iterations ".format(tests) + str(lc.estimate_accuracy(tests))
-            elif choice== 1 and reviewed_possible:
+                CC.create_data_set("unreviewed")
+                lc = CC.create_classifier(LogisticClassifier)
+                lc.estimate_accuracy(tests, verbose=True)
+            elif choice== 1 and CC.reviewed:
                 tests = int(raw_input("Please input number of desired test trials"))
-                classifier_data = []
-                for classification in data.keys():
-                    for f in data[classification]['reviewed']:
-                        try: 
-                            json_file = open(f, "r")
-                            json_dic = json.loads("".join(json_file.readlines()))
-                            classifier_data += [(json_dic, classification)]
-                        except:
-                            print "Error reading ", f
-                lc = LogisticClassifier(self.status.classifiers[classifier_name]['features'], classifier_data, data.keys())
-                print "Average accuracy over {0} iterations ".format(tests) + str(lc.estimate_accuracy(tests))
+                CC.create_data_set("reviewed")
+                lc = CC.create_classifier(LogisticClassifier)
+                lc.estimate_accuracy(tests, verbose=True)
             elif choice == 2:
+                tests = int(raw_input("Please input number of desired test trials"))
+                CC.create_data_set("both")
+                lc = CC.create_classifier(LogisticClassifier)
+                lc.estimate_accuracy(tests, verbose=True)
+            elif choice == 3:
                 cont_work = False
                 
     #Review one file for one to many classifiers
+    
+    """FIX: update with new use of settings file"""
     def review_file(self, classifier_names, data_set, i_no = 0):
         classifications_dic = defaultdict(dict)
         all_classifications = []
         for classifier_name in classifier_names:
             if self.status.classifiers[classifier_name]['info']['settings']:
-                config = ConfigParser.RawConfigParser()
-                config.read(self.status.classifiers[classifier_name]['settings'])
+                classifications = self.status.classifiers[classifier_name]['classifications']
                 classifications = config.get("Classifier", "classes").split(",")
                 classifications_dic[classifier_name]['classifications'] = []
                 for classification in classifications:

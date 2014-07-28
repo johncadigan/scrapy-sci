@@ -1,4 +1,7 @@
-from sciscrapy.features import FeatureExtractor
+try:
+    from sciscrapy.features import FeatureExtractor
+except:
+    from features import FeatureExtractor
 
 class DataFeatures(FeatureExtractor):
     

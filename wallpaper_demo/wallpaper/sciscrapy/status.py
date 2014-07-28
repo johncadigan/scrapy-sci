@@ -21,7 +21,6 @@ class Status(object):
     
     
     def __init__(self):
-
         #Find item
         self.management_ready = False
         self.crawl_ready = False
@@ -42,30 +41,36 @@ class Status(object):
         self.classifiers = {d:{}  for d in data_dir if isdir(join("data",d))} #initialize all classifiers in dictionary form
         self.classify_ready=False
         for classifier in self.classifiers.keys():
-            seed_files = glob("data/{0}/{1}".format(classifier, "/[a-z]*_seed.json"))   
             reviewed_files = glob("data/{0}/{1}".format(classifier, "/[a-z]*[0-9]*.json"))
+            seed_files = glob("data/{0}/{1}".format(classifier, "/[a-z]*_seed.json"))   
+            
             unreviewed_files = [f for f in glob("data/{0}/{1}".format(classifier,"/[a-z]*.json")) if reviewed_files.count(f) == 0]
             settings = glob("data/{0}/{1}".format(classifier, "/settings.cfg"))
             #Find features for classifier
             feature_extractor = glob("data/{0}/{1}".format(classifier,"/*[Ff]eature*.py"))
             if len(feature_extractor) == 1:
+                fe_name, f, filename, description = None, None, None, None
                 try:    
                     fe_name = feature_extractor[0].split("/")[-1].split(".")[0]
                     f, filename, description = imp.find_module(fe_name, ["data"+os.sep+classifier])
-                    module = imp.load_module("data" + "." + classifier, f, filename, description)
-                    classifier_features = [extractor[1] for extractor in inspect.getmembers(module, predicate=inspect.isclass) if extractor[0].find("FeatureExtractor")== -1][0]
-                    self.classifiers[classifier]["features"] = classifier_features
                 except:
                     print "Error trying to read feature extractor file; make sure the feature class is the only class in the file {0}".format(feature_extractor[0])
+                    print "Files :", feature_extractor
+                else:
+                    module = imp.load_module( classifier, f, filename, description)
+                    classifier_features = [extractor[1] for extractor in inspect.getmembers(module, predicate=inspect.isclass) if extractor[0].find("FeatureExtractor")== -1][0]
+                    print classifier_features    
+                    self.classifiers[classifier]["features"] = classifier_features
             else:
                 print "Only one feature extractor per classifier allowed"
                 
             
-            self.classifiers[classifier]['seeds'] = reviewed_files
+            self.classifiers[classifier]['seed'] = seed_files
             self.classifiers[classifier]['reviewed'] = reviewed_files
             self.classifiers[classifier]['unreviewed'] = unreviewed_files
             
             if len(settings) == 1:
+                self.classifiers[classifier]['settings'] = settings
                 self.classifiers[classifier]['classifications'] = {}
                 config = ConfigParser.RawConfigParser()
                 config.read([settings[0]])
@@ -84,12 +89,13 @@ class Status(object):
                 
             self.classifiers[classifier]["info"] = {"seeds": len(seed_files), \
             "reviewed": len(reviewed_files), "unreviewed" : len(unreviewed_files), 
-            "settings" : len(settings) == 1, "features" : self.classify_ready}
+            "settings" : len(settings) == 1, "features" : self.classify_ready, \
+            "seed" : len(seed_files)}
                 
     def program_status(self): #prints settings
-        print "PROGRAM STATUS:\nCurrent Classifiers \t Reviewed \t Unreviewed \t Features\n"
+        print "PROGRAM STATUS:\nCurrent Classifiers \t Seed \t Reviewed \t Unreviewed \t Features\n"
         for classifier in self.classifiers.keys():
-            print classifier + "\n\t\t\t {reviewed} \t\t {unreviewed} \t\t {features}\n".format(**self.classifiers[classifier]["info"]) 
+            print classifier + "\n\t\t\t {seed} \t {reviewed} \t\t {unreviewed} \t\t {features}\n".format(**self.classifiers[classifier]["info"]) 
 
     def classifier_status(self, classifier_name):
         print "Classifier: {0}".format(classifier_name.upper())
@@ -105,7 +111,67 @@ class Status(object):
                 
                 
                 
-                
+
+class Reader(object):
+    
+    
+    def __init__(self):
+        pass
+        
+    @classmethod    
+    def read_seed(cls, file):
+        data = []
+        f = open(file, "r")
+        l = f.readlines()
+        # One JSON object
+        if l[0].find("["):
+            try: 
+                json_string = "".join("".join(json_file.readlines()).split("\n"))
+                data = json.loads(json_string)
+            except:
+                print "Error reading {0} as seed JSON list".format(file)
+        # One JSON object per line
+        else:
+            for i, line in enumerate(l):
+                try: 
+                    datum = json.loads(line.strip())
+                    data.append(datum)
+                except:
+                    print "Error trying to read line {0} of {1} as seed JSON object".format(i+1, file)
+        return data
+    
+    
+    @classmethod
+    def read_reviewed(cls, file):
+        datum = None        
+        try: 
+            json_file = open(file, "r")
+            datum = json.loads("".join(json_file.readlines()))
+        except:
+            print "Error reading {0}".format(file)
+        return datum
+    
+    @classmethod
+    def read_unreviewed(clss, file):
+        data = []
+        f = open(file, "r")
+        l = f.readlines()
+        # One JSON object
+        if l[0].find("["):
+            try: 
+                json_string = "".join("".join(json_file.readlines()).split("\n"))
+                data = json.loads(json_string)
+            except:
+                print "Error reading {0} as unreviewed JSON list".format(file)
+        # One JSON object per line
+        else:
+            for i, line in enumerate(l):
+                try: 
+                    datum = json.loads(line.strip())
+                    data.append(datum)
+                except:
+                    print "Error trying to read line {0} of {1} as unreviewed JSON object".format(i+1, file)
+        return data
                 
                 
                 
