@@ -100,48 +100,82 @@ class Manager(object):
                 cont_work = False
                 
     #Review one file for one to many classifiers
+    
+    """FIX: update with new use of settings file and Reader"""
     def review_file(self, classifier_names, data_set, i_no = 0):
-        classifications_dic = defaultdict(dict)
-        all_classifications = []
+        #Setting up classifiers which are possible
+        valid_classifiers = defaultdict(dict)#Dictionary for currently feasible classifiers only
         for classifier_name in classifier_names:
+            classifications = []
             if self.status.classifiers[classifier_name]['info']['settings']:
-                config = ConfigParser.RawConfigParser()
-                config.read(self.status.classifiers[classifier_name]['settings'])
-                classifications = config.get("Classifier", "classes").split(",")
-                classifications_dic[classifier_name]['classifications'] = []
-                for classification in classifications:
-                    classifications_dic[classifier_name]['classifications'].append(classification)
-                    all_classifications.append(classification)
+                valid_classifiers[classifier_name]['classifications'] = \
+                sorted(self.status.classifiers[classifier_name]['classifications'])
+        #Counting files for valid classifiers
         no_files = {}
-        for classifier in classifications_dic.keys():
+        classifiers = valid_classifiers.keys()
+        for classifier in valid_classifiers.keys():
             reviewed = self.status.classifiers[classifier]['reviewed']
-            for classification in list(classifications_dic[classifier]['classifications']):
+            for classification in list(valid_classifiers[classifier]['classifications']):
+                print classifier, classification
                 no_files[classification] = len([x for x in reviewed if x.find(os.sep + classification) >= 0])
-        with open(data_set, "r") as json_file:
-            json_string = "".join("".join(json_file.readlines()).split("\n"))
-            items = json.loads(json_string)
-        for n, item in enumerate(items):
-            if n > i_no-1:
-                print "ITEM {0}/{1}".format(n+1, len(items))
-                self.item_class.review(item)
-                for classifier in classifications_dic.keys():
-                    print no_files                    
-                    is_a_choice = False    
+        print "Attempting to read data set"
+        items = Reader.read_unreviewed(data_set)
+        #Confirmation mode
+        confirmation_mode = False
+        conf_input = 2
+        while conf_input > 1:
+            print "Looping"
+            try:
+                conf_input = int(raw_input("0. Keep the same\n1. Turn on confirmation mode"))
+            except:
+                print "Wrong input"
+            if conf_input == 1: confirmation_mode = True
+        #Review of items
+        n = i_no
+        while n < len(items):
+            print "ITEM {0}/{1}".format(n, len(items))
+            print no_files
+            item = items[n]
+            self.status.item.review(item)
+            if n >= i_no:
+                to_write = {}
+                for classifier in valid_classifiers.keys():
+                    #Loop to ensure a choice
+                    is_a_choice = False
                     while is_a_choice == False:
                         prompt= "Pick classification\n"
                         choices = {}
                         i = 0               
-                        for classification in classifications_dic[classifier]['classifications']:
+                        for classification in valid_classifiers[classifier]['classifications']:
                             i+=1
                             choices[i] = classification
                             prompt+= "{0}. {1}\t".format(i, classification)
                             if i % 3 == 0: prompt += "\n"
-                        choice = int(raw_input(prompt))
+                        try:
+                            choice = int(raw_input(prompt))
+                        except:
+                            print "Wrong input"
                         if choices.has_key(choice): is_a_choice = True
-                    no_files[choices[choice]]+=1
-                    with open("data/{0}/{1}0{2}.json".format(classifier, choices[choice], no_files[choices[choice]]), "wb") as new_f:
-                        new_f.write(json.dumps(item))
-                if n+1 == len(items): self.main_menu()
+                    to_write[classifier] = choices[choice]
+                confirmed = True
+                if confirmation_mode:
+                    confirmed = False
+                    print "Choices: {0}".format("\t".join(to_write))
+                    choice = 3
+                    while choice < 0 and choice > 1:
+                        try:
+                            choice  = int(raw_input("0. Confirm \n 1. Reclassify"))
+                        except:
+                            print "Wrong input"
+                        if choice == 0: confirmed = True
+                if confirmed:
+                    for classifier in to_write.keys():
+                        no_files[to_write[classifier]]+=1
+                        with open("data/{0}/{1}0{2}.json".format(classifier, to_write[classifier], no_files[to_write[classifier]]), "wb") as new_f:
+                            new_f.write(json.dumps(item))
+                    n+=1
+                print n
+                if n == len(items): self.main_menu()
                 
         
     
@@ -175,9 +209,9 @@ class Manager(object):
                     i+= 1
         prompt += "{0}. Continue review of a file at a position\n".format(i+1)
         prompt += '{0}. Quit\n'.format(i+2)
-        choice = int(raw_input(prompt))
         cont_work = True
-        while cont_work:        
+        while cont_work:
+            choice = int(raw_input(prompt))        
             if choice <= i:
                 self.review_file(classifier_names, choices[choice])
             elif choice == i+1:

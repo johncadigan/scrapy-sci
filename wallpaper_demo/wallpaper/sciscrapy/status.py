@@ -124,7 +124,7 @@ class Reader(object):
         f = open(file, "r")
         l = f.readlines()
         # One JSON object
-        if l[0].find("["):
+        if l[0].find("[") == 0:
             try: 
                 json_string = "".join("".join(json_file.readlines()).split("\n"))
                 data = json.loads(json_string)
@@ -133,6 +133,9 @@ class Reader(object):
         # One JSON object per line
         else:
             for i, line in enumerate(l):
+                line = line.strip()
+                if line.rfind(",") == len(line)-1: 
+                    line = line[0:line.rfind(",")] #remove possible comma at end
                 try: 
                     datum = json.loads(line.strip())
                     data.append(datum)
@@ -157,7 +160,7 @@ class Reader(object):
         f = open(file, "r")
         l = f.readlines()
         # One JSON object
-        if l[0].find("["):
+        if l[0].find("[") == 0:
             try: 
                 json_string = "".join("".join(json_file.readlines()).split("\n"))
                 data = json.loads(json_string)
@@ -166,6 +169,9 @@ class Reader(object):
         # One JSON object per line
         else:
             for i, line in enumerate(l):
+                line = line.strip()
+                if line.rfind(",") == len(line)-1: 
+                    line = line[0:line.rfind(",")] #remove possible comma at end
                 try: 
                     datum = json.loads(line.strip())
                     data.append(datum)
