@@ -99,9 +99,7 @@ class Manager(object):
             elif choice == 3:
                 cont_work = False
                 
-    #Review one file for one to many classifiers
-    
-    """FIX: update with new use of settings file and Reader"""
+    #Review one file for one to many classifiers    
     def review_file(self, classifier_names, data_set, i_no = 0):
         #Setting up classifiers which are possible
         valid_classifiers = defaultdict(dict)#Dictionary for currently feasible classifiers only
@@ -116,7 +114,6 @@ class Manager(object):
         for classifier in valid_classifiers.keys():
             reviewed = self.status.classifiers[classifier]['reviewed']
             for classification in list(valid_classifiers[classifier]['classifications']):
-                print classifier, classification
                 no_files[classification] = len([x for x in reviewed if x.find(os.sep + classification) >= 0])
         print "Attempting to read data set"
         items = Reader.read_unreviewed(data_set)
@@ -124,7 +121,6 @@ class Manager(object):
         confirmation_mode = False
         conf_input = 2
         while conf_input > 1:
-            print "Looping"
             try:
                 conf_input = int(raw_input("0. Keep the same\n1. Turn on confirmation mode"))
             except:

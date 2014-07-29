@@ -25,7 +25,7 @@ test_requirements = [
 setup(
     name='sciscrapy',
     version='0.1.0',
-    description='rn about scraped data and improve your pipeline with machine learning',
+    description='Improve your scrapy pipeline with machine learning',
     long_description=readme + '\n\n' + history,
     author='John Cadigan',
     author_email='johnpaulcadigan@gmail.com',
@@ -45,12 +45,7 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
         'Natural Language :: English',
-        "Programming Language :: Python :: 2",
-        'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.3',
-        'Programming Language :: Python :: 3.4',
     ],
     test_suite='tests',
     tests_require=test_requirements

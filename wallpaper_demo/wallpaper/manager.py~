@@ -116,7 +116,6 @@ class Manager(object):
         for classifier in valid_classifiers.keys():
             reviewed = self.status.classifiers[classifier]['reviewed']
             for classification in list(valid_classifiers[classifier]['classifications']):
-                print classifier, classification
                 no_files[classification] = len([x for x in reviewed if x.find(os.sep + classification) >= 0])
         print "Attempting to read data set"
         items = Reader.read_unreviewed(data_set)
@@ -124,7 +123,6 @@ class Manager(object):
         confirmation_mode = False
         conf_input = 2
         while conf_input > 1:
-            print "Looping"
             try:
                 conf_input = int(raw_input("0. Keep the same\n1. Turn on confirmation mode"))
             except:
@@ -174,7 +172,6 @@ class Manager(object):
                         with open("data/{0}/{1}0{2}.json".format(classifier, to_write[classifier], no_files[to_write[classifier]]), "wb") as new_f:
                             new_f.write(json.dumps(item))
                     n+=1
-                print n
                 if n == len(items): self.main_menu()
                 
         

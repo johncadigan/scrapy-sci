@@ -16,6 +16,7 @@ DOWNLOAD_DELAY = 2
 COOKIES_ENABLED = False
 AUTOTHROTTLE_ENABLED = True
 ITEM_PIPELINES = {'wallpaper.pipelines.ClassifiersPipeline': 100,}
+COMMANDS_MODULE = 'wallpaper.sciscrapy.commands'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'wallpaper (+http://www.yourdomain.com)'

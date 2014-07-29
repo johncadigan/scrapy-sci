@@ -65,9 +65,9 @@ class Status(object):
                 print "Only one feature extractor per classifier allowed"
                 
             
-            self.classifiers[classifier]['seed'] = seed_files
-            self.classifiers[classifier]['reviewed'] = reviewed_files
-            self.classifiers[classifier]['unreviewed'] = unreviewed_files
+            self.classifiers[classifier]['seed'] = sorted(seed_files)
+            self.classifiers[classifier]['reviewed'] = sorted(reviewed_files)
+            self.classifiers[classifier]['unreviewed'] = sorted(unreviewed_files)
             
             if len(settings) == 1:
                 self.classifiers[classifier]['settings'] = settings
@@ -133,7 +133,9 @@ class Reader(object):
         # One JSON object per line
         else:
             for i, line in enumerate(l):
-                if line.rfind(",") == len(line)-1: line = line[0:line.rfind(",")] #remove possible comma at end
+                line = line.strip()
+                if line.rfind(",") == len(line)-1: 
+                    line = line[0:line.rfind(",")] #remove possible comma at end
                 try: 
                     datum = json.loads(line.strip())
                     data.append(datum)
@@ -170,7 +172,6 @@ class Reader(object):
                 line = line.strip()
                 if line.rfind(",") == len(line)-1: 
                     line = line[0:line.rfind(",")] #remove possible comma at end
-                print line
                 try: 
                     datum = json.loads(line.strip())
                     data.append(datum)
