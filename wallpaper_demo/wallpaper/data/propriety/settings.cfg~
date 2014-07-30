@@ -1,5 +1,0 @@
-[Classifier]
-classes =  ok,dirty
- ok = True
-dirty = True
-
