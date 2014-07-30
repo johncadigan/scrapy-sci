@@ -29,7 +29,7 @@ class ClassifiersPipeline(object):
         self.classifiers = sorted(self.classifiers, key = lambda a: a[1].estimate_accuracy(5))
         print "Classifier {0} needs the most improvement; selected for export".format(self.classifiers[0][0])
         for classification in self.status.classifiers[self.classifiers[0][0]]['classifications']:
-            f = file("data/{0}/{1}.json".format(self.classifiers[0][0], classification), "wb")
+            f = file("{0}.json".format(classification), "wb")
             self.exporters[classification] = JsonItemExporter(f)
                 
     

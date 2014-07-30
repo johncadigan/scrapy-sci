@@ -1,23 +1,25 @@
 ===============================
-SciScrapy
+Scrapy-Sci
 ===============================
 
-.. image:: https://badge.fury.io/py/sciscrapy.png
-    :target: http://badge.fury.io/py/sciscrapy
-
-.. image:: https://travis-ci.org/johncadigan/sciscrapy.png?branch=master
-        :target: https://travis-ci.org/johncadigan/sciscrapy
-
 .. image:: https://pypip.in/d/sciscrapy/badge.png
-        :target: https://pypi.python.org/pypi/sciscrapy
+        :target: https://pypi.python.org/pypi/scrapy-sci
 
 
-rn about scraped data and improve your pipeline with machine learning
+Improve your pipeline with machine learning via scikit-learn
 
 * Free software: BSD license
-* Documentation: http://sciscrapy.readthedocs.org.
 
 Features
 --------
+* Classifier-based pipeline
+* Review of items for classification
 
-* TODO
+
+TODO:
+
+* Improve integration with scikit-learn
+* Finish command line utilities
+* Write unit-tests
+* Finish setup.py
+* Write documentation

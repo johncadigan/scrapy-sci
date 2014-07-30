@@ -14,7 +14,7 @@ class Command(ScrapyCommand):
         return "[options] <classifier>"
 
     def short_desc(self):
-        return "Work with a classifier"
+        return "Estimate the accuracy of a classifier"
 
     def add_options(self, parser):
         ScrapyCommand.add_options(self, parser)

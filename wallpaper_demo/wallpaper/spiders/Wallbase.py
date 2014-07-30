@@ -8,9 +8,9 @@ from scrapy.contrib.linkextractors import LinkExtractor
 
 class WallbaseSearch(CrawlSpider):
     name = "wallbase"
-    allowed_domains = ["wallbase.cc"]
+    allowed_domains = ["http://wallbase.cc/", "wallbase.cc"]
     start_urls = [
-"http://wallbase.cc/search?q=&color=&section=wallpapers&q=&res_opt=eqeq&res=0x0&order_mode=desc&thpp=60&purity=100&board=21&aspect=0.00"
+    "http://wallbase.cc/random"
     ]
     rules = (
 

@@ -21,13 +21,24 @@ class Status(object):
     
     
     def __init__(self):
+        #Find directories
+        
+        #a !="sciscrapy" is for development only
+        cur_dirs = filter(lambda a: isdir(a) and a !="sciscrapy", os.listdir(os.curdir))
+        if len(cur_dirs) == 1 and cur_dirs.count("data") == 0: #In project level folder
+            self.data_dir = "{1}{0}{2}{0}{3}".format(os.sep, os.curdir, cur_dirs[0], "data")
+            self.project_dir = "{0}".format(cur_dirs[0])
+        else:# One level into project
+            self.data_dir = "{0}".format("data")
+            self.project_dir = ""
         #Find item
         self.management_ready = False
         self.crawl_ready = False
         self.item = None
         try:
-            f, filename, description = imp.find_module("items",)
+            f, filename, description = imp.find_module("items", [self.project_dir])
             module = imp.load_module("items", f, filename, description)
+            print module
             x = filter(lambda a: a.find("scrapy.Item") > 0, f.readlines())
             item_class_name = x[0].split("(")[0].split(" ")[1]
             print "Detected item class " + item_class_name
@@ -37,25 +48,26 @@ class Status(object):
             print "Unable to find item class"
     
         #Find classifiers and files
-        data_dir = os.listdir(os.curdir + "/data")
-        self.classifiers = {d:{}  for d in data_dir if isdir(join("data",d))} #initialize all classifiers in dictionary form
+        data_dirs = os.listdir(self.data_dir)
+        self.classifiers = {d:{}  for d in data_dirs if isdir(join(self.data_dir,d))} #initialize all classifiers in dictionary form
         self.classify_ready=False
         for classifier in self.classifiers.keys():
-            reviewed_files = glob("data/{0}/{1}".format(classifier, "/[a-z]*[0-9]*.json"))
-            seed_files = glob("data/{0}/{1}".format(classifier, "/[a-z]*_seed.json"))   
-            
-            unreviewed_files = [f for f in glob("data/{0}/{1}".format(classifier,"/[a-z]*.json")) if reviewed_files.count(f) == 0]
-            settings = glob("data/{0}/{1}".format(classifier, "/settings.cfg"))
+            classifier_dir = join(self.data_dir, classifier)
+            reviewed_files = glob(join(classifier_dir, "[a-z]*[0-9]*.json"))
+            seed_files = glob(join(classifier_dir, "[a-z]*_seed.json"))   
+            unreviewed_files = [f for f in glob(join(classifier_dir, "[a-z]*.json")) if reviewed_files.count(f) == 0]
+            settings = glob(join(join(classifier_dir,"settings.cfg")))
             #Find features for classifier
-            feature_extractor = glob("data/{0}/{1}".format(classifier,"/*[Ff]eature*.py"))
-            if len(feature_extractor) == 1:
+            feature_extractor_files = glob(join(classifier_dir, "*[Ff]eature*.py"))
+            if len(feature_extractor_files) == 1:
                 fe_name, f, filename, description = None, None, None, None
                 try:    
-                    fe_name = feature_extractor[0].split("/")[-1].split(".")[0]
-                    f, filename, description = imp.find_module(fe_name, ["data"+os.sep+classifier])
+                    fe_name = feature_extractor_files[0].split("/")[-1].split(".")[0]
+                    print fe_name
+                    f, filename, description = imp.find_module(fe_name, [classifier_dir])
                 except:
-                    print "Error trying to read feature extractor file; make sure the feature class is the only class in the file {0}".format(feature_extractor[0])
-                    print "Files :", feature_extractor
+                    print "Error trying to read feature extractor file; make sure the feature class is the only class in the file {0}".format(feature_extractor_files[0])
+                    print "Files :", feature_extractor_files
                 else:
                     module = imp.load_module( classifier, f, filename, description)
                     classifier_features = [extractor[1] for extractor in inspect.getmembers(module, predicate=inspect.isclass) if extractor[0].find("FeatureExtractor")== -1][0]
