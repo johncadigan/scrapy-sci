@@ -12,5 +12,15 @@ Improve your pipeline with machine learning via scikit-learn
 
 Features
 --------
+* Classifier-based pipeline
+* Review of items for classification
 
-* TODO
+
+TODO:
+
+* Improve integration with scikit-learn
+* Finish command line utilities
+* Write unit-tests
+* Finish setup.py
+* Write documentation
+
