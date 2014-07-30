@@ -23,23 +23,23 @@ test_requirements = [
 ]
 
 setup(
-    name='sciscrapy',
+    name='scrapy-sci',
     version='0.1.0',
     description='Improve your scrapy pipeline with machine learning',
     long_description=readme + '\n\n' + history,
     author='John Cadigan',
     author_email='johnpaulcadigan@gmail.com',
-    url='https://github.com/johncadigan/sciscrapy',
+    url='https://github.com/johncadigan/scrapy-sci',
     packages=[
-        'sciscrapy',
+        'scrapy_sci',
     ],
-    package_dir={'sciscrapy':
-                 'sciscrapy'},
+    package_dir={'scrapy_sci':
+                 'scrapy_sci'},
     include_package_data=True,
     install_requires=requirements,
     license="BSD",
     zip_safe=False,
-    keywords='sciscrapy',
+    keywords='machine learning',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
