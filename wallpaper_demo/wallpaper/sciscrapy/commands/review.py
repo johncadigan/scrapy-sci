@@ -101,8 +101,10 @@ class Command(ScrapyCommand):
                         if choice == 0: confirmed = True
                 if confirmed:
                     for classifier in to_write.keys():
+                        classifier_dir = os.path.join(status.data_dir, classifier)
                         no_files[to_write[classifier]]+=1
-                        with open("{0}{1}{2}.json".format(os.path.join(status.data_dir, classifier), to_write[classifier], no_files[to_write[classifier]]), "wb") as new_f:
+                        new_f_name
+                        with open(os.path.join(classifier_dir, new_f_name), "wb") as new_f:
                             new_f.write(json.dumps(item))
                     n+=1
                 if n == len(items): sys.exit()

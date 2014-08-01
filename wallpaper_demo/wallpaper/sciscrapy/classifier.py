@@ -3,75 +3,52 @@
 import random
 import numpy as np
 from sklearn import linear_model
-from features import FeatureVectorFactory
 
+#Labels
+from sklearn import preprocessing
+#preprocessing.LabelEncoder
+
+#Data
+
+#Testing
+from sklearn import cross_validation
+
+from features import FeatureVectorFactory
 from status import Reader
 
 
-class LogisticClassifier(object):
+class ClassifierWrapper(object):
     
     
-    def __init__(self, feature_extractor, data, labels, h=.02, c=1e5):
-        self.FVF = FeatureVectorFactory(feature_extractor, [item for item,label in data])
-        self.data = data
-        random.shuffle(self.data)
-        self.i_labels = {}
-        self.o_labels = {}
-        for i, label in enumerate(sorted(labels)):
-            self.i_labels[label] = i #internal labels
-            self.o_labels[i] = label # external labels
-        self.classifier = linear_model.LogisticRegression(C=c)
+    def __init__(self, classifier, X, y, label_encoder, transformer):
+        self.classifier = classifier
+        self.X = X
+        self.y = y
     
     
-    def train(self):
-        X = []
-        Y = []
-        for datum in self.data:
-            x,y = datum
-            X.append(self.FVF.make_vector(x))
-            Y.append(self.i_labels[y])
-        X = np.array(X)
-        Y = np.array(Y)
-        self.classifier.fit(X,Y)
+    def fit(self):
+        self.classifier.fit(self.X, self.y)
             
     
-    def classify(self, datum):
-        guess = self.classifier.predict(self.FVF.make_vector(datum))
-        return self.o_labels[guess[0]]
+    def predict(self, datum):
+        guess = self.classifier.predict(transformer.transform(datum))
+        return self.label_encoder.inverse_transform(guess[0])
         
     
-    def estimate_accuracy(self, iterations, verbose=False):
+    def estimate_accuracy(self, trials, verbose=False):
         score = 0.0
         i = 0
-        while i < iterations:
-            random.shuffle(self.data)
-            train, test = self.data[:len(self.data)/2], self.data[len(self.data)/2:]
-            #Train        
-            X = []
-            Y = []
-            for datum in train:
-                x,y = datum
-                X.append(self.FVF.make_vector(x))
-                Y.append(self.i_labels[y])
-            X = np.array(X)
-            Y = np.array(Y)
-            self.classifier.fit(X,Y)
-            #Test
-            M = []
-            N = []
-            for datum in test:
-                x,y = datum
-                M.append(self.FVF.make_vector(x))
-                N.append(self.i_labels[y])
-            M = np.array(M)
-            N = np.array(N)
-            i += 1
-            score +=self.classifier.score(M,N)
-        if verbose: print "Average accuracy over {0} iterations: {1} ".format(iterations, score/float(i))
+        while i < trials:
+            X_train, X_test, y_train, y_test = cross_validation.train_test_split(
+            self.X, self.y, test_size=0.4, random_state=0)
+            self.classifier.fit(X_train, y_train)
+            score +=self.classifier.score(X_test,y_test)
+            i+=1
+        if verbose: print "Average accuracy over {0} iterations: {1} ".format(trials, score/float(i))
         return score / float(i)
     
 
-class ClassifierCreator(object):
+class ClassifierFactory(object):
     
     def __init__(self, classifier_dic):
         self.classifier = classifier_dic
@@ -93,27 +70,43 @@ class ClassifierCreator(object):
                 self.unreviewed = False
             if self.unreviewed == False and self.reviewed == False:
                 self.possible = False
+        self.data = [] #Data features
+        self.labels = [] #Data labels
                 
     def create_data_set(self, data_type):
-        self.data = [] #For tuples of (dic, classification) to be passed to classifier
         for classification in self.data_files.keys():
             if data_type == "reviewed" or data_type == "both":
                 for f in self.data_files[classification]["reviewed"]:
                     datum =Reader.read_reviewed(f)
                     if datum:
-                        self.data.append((datum, classification))
+                        self.data.append(datum)
+                        self.labels.append(classification)
                 if data_type == "both":
                     for fs in self.data_files[classification]["seed"]:
                         for datum in Reader.read_seed(fs):
-                            self.data.append((datum, classification))
+                            self.data.append(datum)
+                            self.labels.append(classification)
             if data_type == "unreviewed" or data_type == "both":
                  for f in self.data_files[classification]["unreviewed"]:
                     for datum in Reader.read_seed(fs):
-                        self.data.append((datum, classification))
+                        self.data.append(datum)
+                        self.labels.append(classification)
+    
+    def test_classifier(self, scikit_classifier, transformer, trials):
+        X = transformer.fit_transform(self.data)
+        le = preprocessing.LabelEncoder()
+        y = le.fit_transform(self.labels)
+        cw = ClassifierWrapper(scikt_classifier, X, y, transformer, le)
+        return cw.estimate_accuracy(trials, verbose = True)
         
-    def create_classifier(self, classifier_type):
-        c = classifier_type(self.classifier['features'], self.data, sorted(self.classifier['classifications']))
-        return c
+        
+    def fit_classifier(self, scikit_classifier, transformer):
+        X = transformer.fit_transform(self.data)
+        le = preprocessing.LabelEncoder()
+        y = le.fit_transform(self.labels)
+        cw = ClassifierWrapper(scikt_classifier, X, y, transformer, le)
+        return cw.fit()
+        
     
         
         
