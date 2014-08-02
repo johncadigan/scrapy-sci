@@ -22,9 +22,7 @@ class Status(object):
     
     def __init__(self):
         #Find directories
-        
-        #a !="sciscrapy" is for development only
-        cur_dirs = filter(lambda a: isdir(a) and a !="sciscrapy", os.listdir(os.curdir))
+        cur_dirs = filter(lambda a: isdir(a), os.listdir(os.curdir))
         if len(cur_dirs) == 1 and cur_dirs.count("data") == 0: #In project level folder
             data_dir = "{1}{0}{2}{0}{3}".format(os.sep, os.curdir, cur_dirs[0], "data")
             project_dir = "{0}".format(cur_dirs[0])
@@ -32,6 +30,7 @@ class Status(object):
             data_dir = "{0}".format("data")
             project_dir = ""
         #Find item
+        print "data", data_dir, "project", project_dir
         self.management_ready = False
         self.crawl_ready = False
         self.item = None
@@ -49,7 +48,9 @@ class Status(object):
     
         #Find classifiers and files
         data_dirs = os.listdir(data_dir)
+        print data_dirs
         self.classifiers = {d:{}  for d in data_dirs if isdir(join(data_dir,d))} #initialize all classifiers in dictionary form
+        print self.classifiers
         self.classify_ready=False
         for classifier in self.classifiers.keys():
             classifier_dir = join(data_dir, classifier)
@@ -59,6 +60,7 @@ class Status(object):
             settings = glob(join(join(classifier_dir,"settings.cfg")))
             #Find features for classifier
             feature_extractor_files = glob(join(classifier_dir, "*[Ff]eature*.py"))
+            print feature_extractor_files
             if len(feature_extractor_files) == 1:
                 fe_name, f, filename, description = None, None, None, None
                 try:    

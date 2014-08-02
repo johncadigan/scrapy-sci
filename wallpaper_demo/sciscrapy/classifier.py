@@ -1,77 +1,106 @@
 # -*- coding: utf-8 -*-
+from __future__ import print_function
+from time import time
 
-import random
 import numpy as np
-from sklearn import linear_model
-from features import FeatureVectorFactory
+np.set_printoptions(threshold=np.nan)
+np.set_printoptions(linewidth=150)
+
+from sklearn import preprocessing
+from sklearn import cross_validation
+from sklearn.utils.extmath import density
+from sklearn import metrics
+from sklearn.feature_selection import SelectKBest, chi2
 
 from status import Reader
 
 
-class LogisticClassifier(object):
+class ClassifierWrapper(object):
     
     
-    def __init__(self, feature_extractor, data, labels, h=.02, c=1e5):
-        self.FVF = FeatureVectorFactory(feature_extractor, [item for item,label in data])
-        self.data = data
-        random.shuffle(self.data)
-        self.i_labels = {}
-        self.o_labels = {}
-        for i, label in enumerate(sorted(labels)):
-            self.i_labels[label] = i #internal labels
-            self.o_labels[i] = label # external labels
-        self.classifier = linear_model.LogisticRegression(C=c)
+    def __init__(self, classifier, X, y, label_encoder, transformer):
+        self.classifier = classifier
+        self.label_encoder = label_encoder
+        self.transformer = transformer
+        self.X = X
+        self.y = y
     
-    
-    def train(self):
-        X = []
-        Y = []
-        for datum in self.data:
-            x,y = datum
-            X.append(self.FVF.make_vector(x))
-            Y.append(self.i_labels[y])
-        X = np.array(X)
-        Y = np.array(Y)
-        self.classifier.fit(X,Y)
+    #Implementation of standard classifier functions
+    def fit(self,X=None, y=None):
+        if X == None and y == None:
+            self.classifier.fit(self.X, self.y)
+        else:
+            self.classifier.fit(X,y)
             
+    def predict(self, data_features):
+        return self.classifier.predict(data_features)
     
+    
+    #Other functions
     def classify(self, datum):
-        guess = self.classifier.predict(self.FVF.make_vector(datum))
-        return self.o_labels[guess[0]]
-        
+        guess = self.classifier.predict(self.transformer.transform(datum))
+        return self.label_encoder.inverse_transform(guess[0])
     
-    def estimate_accuracy(self, iterations, verbose=False):
+    def benchmark(self, top_n=0, confusion_matrix=False, report=False, verbose=False):
+        X_train, X_test, y_train, y_test = cross_validation.train_test_split(
+            self.X, self.y, test_size=0.4, random_state=0)
+        #feature_names = np.asarray(self.transformer.get_feature_names())
+        categories = list(self.label_encoder.classes_)
+        if verbose:
+            print('_' * 80)
+            print("Training: ")
+            print(self.classifier)
+        t0 = time()
+        self.classifier.fit(X_train, y_train)
+        train_time = time() - t0
+        if verbose: print("train time: {:.3}s".format(train_time))
+
+        t0 = time()
+        pred = self.classifier.predict(X_test)
+        test_time = time() - t0
+        if verbose: print("test time: {:.3}s".format(train_time))
+
+        score = metrics.f1_score(y_test, pred)
+        if verbose: print("f1 score: {:.3}".format(score))
+
+        if hasattr(self.classifier, 'coef_') and verbose and False:#No feature names yet
+            print("dimensionality: %d" % self.classifier.coef_.shape[1])
+            print("density: %f" % density(clf.coef_))
+            if top_n > 0 and feature_names is not None:
+                print("top {0} keywords per class:".format(top_n))
+                for i, category in enumerate(categories):
+                    topn = np.argsort(clf.coef_[i])[-top_n:]
+                    print("{0}: {1}".format(category, " ".join(feature_names[topn])))
+            print()
+
+        if report:
+            print("classification report:")
+            print(metrics.classification_report(y_test, pred,
+                                                target_names=categories))
+
+        if confusion_matrix:
+            print("confusion matrix:")
+            print(["{0}:{1}".format(i, category) for (i, category) in enumerate(categories)])
+            print(metrics.confusion_matrix(y_test, pred))
+
+        if verbose: print()
+        clf_descr = str(self.classifier).split('(')[0]
+        return clf_descr, score, train_time, test_time #For comparative printout
+
+    def estimate_accuracy(self, trials, verbose=False):
         score = 0.0
         i = 0
-        while i < iterations:
-            random.shuffle(self.data)
-            train, test = self.data[:len(self.data)/2], self.data[len(self.data)/2:]
-            #Train        
-            X = []
-            Y = []
-            for datum in train:
-                x,y = datum
-                X.append(self.FVF.make_vector(x))
-                Y.append(self.i_labels[y])
-            X = np.array(X)
-            Y = np.array(Y)
-            self.classifier.fit(X,Y)
-            #Test
-            M = []
-            N = []
-            for datum in test:
-                x,y = datum
-                M.append(self.FVF.make_vector(x))
-                N.append(self.i_labels[y])
-            M = np.array(M)
-            N = np.array(N)
-            i += 1
-            score +=self.classifier.score(M,N)
-        if verbose: print "Average accuracy over {0} iterations: {1} ".format(iterations, score/float(i))
+        while i < trials:
+            X_train, X_test, y_train, y_test = cross_validation.train_test_split(
+            self.X, self.y, test_size=0.4, random_state=0)
+            self.classifier.fit(X_train, y_train)
+            score +=self.classifier.score(X_test,y_test)
+            i+=1
+        if verbose: print("Average accuracy over {0} iterations: {1} ".format(trials, score/float(i)))
         return score / float(i)
     
 
-class ClassifierCreator(object):
+class ClassifierFactory(object):
     
     def __init__(self, classifier_dic):
         self.classifier = classifier_dic
@@ -93,27 +122,44 @@ class ClassifierCreator(object):
                 self.unreviewed = False
             if self.unreviewed == False and self.reviewed == False:
                 self.possible = False
+        self.data = [] #Data features
+        self.labels = [] #Data labels
                 
     def create_data_set(self, data_type):
-        self.data = [] #For tuples of (dic, classification) to be passed to classifier
         for classification in self.data_files.keys():
             if data_type == "reviewed" or data_type == "both":
                 for f in self.data_files[classification]["reviewed"]:
                     datum =Reader.read_reviewed(f)
                     if datum:
-                        self.data.append((datum, classification))
+                        self.data.append(datum)
+                        self.labels.append(classification)
                 if data_type == "both":
                     for fs in self.data_files[classification]["seed"]:
                         for datum in Reader.read_seed(fs):
-                            self.data.append((datum, classification))
+                            self.data.append(datum)
+                            self.labels.append(classification)
             if data_type == "unreviewed" or data_type == "both":
                  for f in self.data_files[classification]["unreviewed"]:
                     for datum in Reader.read_seed(fs):
-                        self.data.append((datum, classification))
+                        self.data.append(datum)
+                        self.labels.append(classification)
+    
+    def test_classifier(self, scikit_classifier, transformer, trials):
+        X = transformer.fit_transform(self.data)
+        le = preprocessing.LabelEncoder()
+        y = le.fit_transform(self.labels)
+        cw = ClassifierWrapper(scikt_classifier, X, y, transformer, le)
+        return cw.estimate_accuracy(trials, verbose = True)
         
-    def create_classifier(self, classifier_type):
-        c = classifier_type(self.classifier['features'], self.data, sorted(self.classifier['classifications']))
-        return c
+        
+    def create_classifier(self, scikit_classifier, transformer):
+        t = transformer
+        X = t.fit_transform(self.data)
+        le = preprocessing.LabelEncoder()
+        y = le.fit_transform(self.labels)
+        cw = ClassifierWrapper(scikit_classifier, X, y, le, t)
+        return cw
+        
     
         
         

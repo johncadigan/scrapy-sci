@@ -3,6 +3,7 @@ from __future__ import print_function
 from time import time
 
 import numpy as np
+np.set_printoptions(threshold=np.nan)
 
 from sklearn import preprocessing
 from sklearn import cross_validation
@@ -39,10 +40,10 @@ class ClassifierWrapper(object):
         guess = self.classifier.predict(self.transformer.transform(datum))
         return self.label_encoder.inverse_transform(guess[0])
     
-    def benchmark(self, top_n=0, report=False, confusion_matrix=False, verbose=False):
+    def benchmark(self, top_n=0, confusion_matrix=False, report=False, verbose=False):
         X_train, X_test, y_train, y_test = cross_validation.train_test_split(
             self.X, self.y, test_size=0.4, random_state=0)
-        feature_names = np.asarray(self.transformer.get_feature_names())
+        #feature_names = np.asarray(self.transformer.get_feature_names())
         categories = list(self.label_encoder.classes_)
         if verbose:
             print('_' * 80)
@@ -61,7 +62,7 @@ class ClassifierWrapper(object):
         score = metrics.f1_score(y_test, pred)
         if verbose: print("f1 score: {:.3}".format(score))
 
-        if hasattr(self.classifier, 'coef_') and verbose:
+        if hasattr(self.classifier, 'coef_') and verbose and False:#No feature names yet
             print("dimensionality: %d" % self.classifier.coef_.shape[1])
             print("density: %f" % density(clf.coef_))
             if top_n > 0 and feature_names is not None:

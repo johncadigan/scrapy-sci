@@ -49,19 +49,19 @@ class Status(object):
     
         #Find classifiers and files
         data_dirs = os.listdir(self.data_dir)
-        self.classifiers = {d:{}  for d in data_dirs if isdir(join(self.data_dir,d))} #initialize all classifiers in dictionary form
+        self.classifiers = {d:{} for d in data_dirs if isdir(join(self.data_dir,d))} #initialize all classifiers in dictionary form
         self.classify_ready=False
         for classifier in self.classifiers.keys():
             classifier_dir = join(self.data_dir, classifier)
             reviewed_files = glob(join(classifier_dir, "[a-z]*[0-9]*.json"))
-            seed_files = glob(join(classifier_dir, "[a-z]*_seed.json"))   
+            seed_files = glob(join(classifier_dir, "[a-z]*_seed.json"))
             unreviewed_files = [f for f in glob(join(classifier_dir, "[a-z]*.json")) if reviewed_files.count(f) == 0]
             settings = glob(join(join(classifier_dir,"settings.cfg")))
             #Find features for classifier
             feature_extractor_files = glob(join(classifier_dir, "*[Ff]eature*.py"))
             if len(feature_extractor_files) == 1:
                 fe_name, f, filename, description = None, None, None, None
-                try:    
+                try:
                     fe_name = feature_extractor_files[0].split("/")[-1].split(".")[0]
                     print fe_name
                     f, filename, description = imp.find_module(fe_name, [classifier_dir])
@@ -71,7 +71,7 @@ class Status(object):
                 else:
                     module = imp.load_module( classifier, f, filename, description)
                     classifier_features = [extractor[1] for extractor in inspect.getmembers(module, predicate=inspect.isclass) if extractor[0].find("FeatureExtractor")== -1][0]
-                    print classifier_features    
+                    print classifier_features
                     self.classifiers[classifier]["features"] = classifier_features
             else:
                 print "Only one feature extractor per classifier allowed"
@@ -100,7 +100,7 @@ class Status(object):
                 self.classify_ready = True
                 
             self.classifiers[classifier]["info"] = {"seeds": len(seed_files), \
-            "reviewed": len(reviewed_files), "unreviewed" : len(unreviewed_files), 
+            "reviewed": len(reviewed_files), "unreviewed" : len(unreviewed_files),
             "settings" : len(settings) == 1, "features" : self.classify_ready, \
             "seed" : len(seed_files)}
                 

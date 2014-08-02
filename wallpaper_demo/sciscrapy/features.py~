@@ -26,6 +26,7 @@ class DictVectWrapper(object):
             features = {}
             for feature in self.feature_extractors:
                 features.update(feature(datum))
+            print features
             data_dics.append(features)
         res = self.dv.fit_transform(data_dics)
         return res

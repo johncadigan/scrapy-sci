@@ -5,6 +5,8 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
 import os
+from time import time
+
 from scrapy.contrib.exporter import JsonItemExporter
 from scrapy.exceptions import DropItem
 
@@ -29,7 +31,7 @@ class ClassifiersPipeline(object):
         self.classifiers = sorted(self.classifiers, key = lambda a: a[1].estimate_accuracy(5))
         print "Classifier {0} needs the most improvement; selected for export".format(self.classifiers[0][0])
         for classification in self.status.classifiers[self.classifiers[0][0]]['classifications']:
-            f = file("{1}.json".format(classification), "wb")
+            f = file("{0}.json".format(classification), "wb")
             self.exporters[classification] = JsonItemExporter(f)
                 
     

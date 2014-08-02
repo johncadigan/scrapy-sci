@@ -1,10 +1,12 @@
 import os
+import sys
 from scrapy.command import ScrapyCommand
 from scrapy.utils.conf import arglist_to_dict
 from scrapy.exceptions import UsageError
-
+from collections import defaultdict
+import json
 from wallpaper.sciscrapy.status import Status, Reader
-from wallpaper.sciscrapy.classifier import LogisticClassifier, ClassifierCreator
+from wallpaper.sciscrapy.classifier import ClassifierFactory
 
 class Command(ScrapyCommand):
 
@@ -34,14 +36,14 @@ class Command(ScrapyCommand):
             raise UsageError("running 'scrapy review' with more than one argument is not supported")
         file_name = args[0]
         status = Status()
-        if len(opts.classifiers) == 0: opts.classifiers = status.keys() #If all classifiers are to be used
+        if len(opts.classifiers) == 0: opts.classifiers = status.classifiers.keys() #If all classifiers are to be used
         #Setting up classifiers which are possible
         valid_classifiers = defaultdict(dict)#Dictionary for currently feasible classifiers only
-        for classifier_name in classifier_names:
+        for classifier_name in status.classifiers.keys():
             classifications = []
-            if status.classifiers[classifier_name]['info']['settings'] and opts.count(classifier_name) == 1:
+            if status.classifiers[classifier_name]['info']['settings'] and opts.classifiers.count(classifier_name) == 1:
                 valid_classifiers[classifier_name]['classifications'] = \
-                sorted(self.status.classifiers[classifier_name]['classifications'])
+                sorted(status.classifiers[classifier_name]['classifications'])
         #Counting files for valid classifiers
         no_files = {}
         classifiers = valid_classifiers.keys()
@@ -49,7 +51,7 @@ class Command(ScrapyCommand):
             reviewed = status.classifiers[classifier]['reviewed']
             for classification in list(valid_classifiers[classifier]['classifications']):
                 no_files[classification] = len([x for x in reviewed if x.find(os.sep + classification) >= 0])
-        items = Reader.read_unreviewed(data_set)
+        items = Reader.read_unreviewed(file_name)
         #Confirmation mode
         confirmation_mode = False
         conf_input = 3
@@ -66,7 +68,7 @@ class Command(ScrapyCommand):
             print no_files
             item = items[n]
             status.item.review(item)
-            if n >= i_no:
+            if n >= opts.i_no:
                 to_write = {}
                 for classifier in valid_classifiers.keys():
                     #Loop to ensure a choice
@@ -99,8 +101,10 @@ class Command(ScrapyCommand):
                         if choice == 0: confirmed = True
                 if confirmed:
                     for classifier in to_write.keys():
+                        classifier_dir = os.path.join(status.data_dir, classifier)
                         no_files[to_write[classifier]]+=1
-                        with open("data/{0}/{1}0{2}.json".format(classifier, to_write[classifier], no_files[to_write[classifier]]), "wb") as new_f:
+                        new_f_name
+                        with open(os.path.join(classifier_dir, new_f_name), "wb") as new_f:
                             new_f.write(json.dumps(item))
                     n+=1
-                if n == len(items): self.main_menu()
+                if n == len(items): sys.exit()

@@ -1,11 +1,9 @@
-# -*- coding: utf-8 -*-
-
 try:
-    from sciscrapy.features import DictVectWrapper
+    from sciscrapy.features import FeatureExtractor
 except:
-    from features import DictVectWrapper
-
-class DataFeatures(DictVectWrapper):
+    from features import FeatureExtractor
+    
+class DataFeatures(FeatureExtractor):
     
     def __init__(self):
         super(DataFeatures, self).__init__()
@@ -22,7 +20,8 @@ class DataFeatures(DictVectWrapper):
         for descriptor in datum['descriptors']:
             features["tag({0})".format(descriptor.encode('utf-8'))] = 1.0
             if descriptor.encode('utf-8')[0].isupper(): features['named'] = 1.0
-        return features 
+        return features
+    
     
     
     

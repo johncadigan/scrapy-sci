@@ -1,9 +1,9 @@
 try:
-    from sciscrapy.features import FeatureExtractor
+    from sciscrapy.features import DictVectWrapper
 except:
-    from features import FeatureExtractor
+    from features import DictVectWrapper
     
-class DataFeatures(FeatureExtractor):
+class DataFeatures(DictVectWrapper):
     
     def __init__(self):
         super(DataFeatures, self).__init__()

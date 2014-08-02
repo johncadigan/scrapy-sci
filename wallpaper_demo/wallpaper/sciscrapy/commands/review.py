@@ -6,7 +6,7 @@ from scrapy.exceptions import UsageError
 from collections import defaultdict
 import json
 from wallpaper.sciscrapy.status import Status, Reader
-from wallpaper.sciscrapy.classifier import LogisticClassifier, ClassifierCreator
+from wallpaper.sciscrapy.classifier import ClassifierFactory
 
 class Command(ScrapyCommand):
 
