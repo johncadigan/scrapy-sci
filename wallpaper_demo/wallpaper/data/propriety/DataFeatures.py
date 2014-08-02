@@ -1,5 +1,5 @@
 try:
-    from sciscrapy.features import DictVectWrapper
+    from scrapy_sci.features import DictVectWrapper
 except:
     from features import DictVectWrapper
     
