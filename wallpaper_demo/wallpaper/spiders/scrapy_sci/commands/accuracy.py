@@ -18,8 +18,8 @@ from sklearn.linear_model import PassiveAggressiveClassifier
 from sklearn.naive_bayes import BernoulliNB, MultinomialNB
 
 
-from wallpaper.sciscrapy.status import Status
-from wallpaper.sciscrapy.classifier import ClassifierFactory
+from scrapy_sci.status import Status
+from scrapy_sci.classifier import ClassifierFactory
 
 class Command(ScrapyCommand):
 

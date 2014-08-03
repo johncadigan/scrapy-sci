@@ -12,7 +12,7 @@ import scrapy
 from scrapy.command import ScrapyCommand
 from scrapy.utils.template import render_templatefile, string_camelcase
 from scrapy.exceptions import UsageError
-import scrapy_sci as scrapy_sci
+import scrapy_sci
 
 TEMPLATES_PATH = join(scrapy_sci.__path__[0], 'templates')
 CLASSIFIERS_PATH = os.getcwd() + os.sep + "data"

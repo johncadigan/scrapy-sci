@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 
-try:
-    from scrapy_sci.features import DictVectWrapper
-except:
-    from features import DictVectWrapperr
+
+from scrapy_sci.features import DictVectWrapper
 
 class DataFeatures(DictVectWrapper):
     

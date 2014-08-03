@@ -12,9 +12,8 @@ import scrapy
 from scrapy.command import ScrapyCommand
 from scrapy.utils.template import render_templatefile, string_camelcase
 from scrapy.exceptions import UsageError
-import wallpaper.sciscrapy as sciscrapy
 
-TEMPLATES_PATH = join(sciscrapy.__path__[0], 'templates')
+TEMPLATES_PATH = join(scrapy_sci.__path__[0], 'templates')
 CLASSIFIERS_PATH = os.getcwd() + os.sep + "data"
 
 TEMPLATES_TO_RENDER = (
