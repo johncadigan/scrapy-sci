@@ -8,7 +8,12 @@ class DataFeatures(DictVectWrapper):
     def __init__(self):
         super(DataFeatures, self).__init__()
     
-    
+    def dimension_features(self, datum):
+        x = float(datum["x_resolution"])
+        y = float(datum["y_resolution"])
+        if x / y > 3: features['wide'] = 1.0
+        return features
+
     def color_features(self, datum):
         features = {}
         for color in datum['colors']:

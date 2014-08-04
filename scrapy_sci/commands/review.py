@@ -91,14 +91,12 @@ class Command(ScrapyCommand):
                 confirmed = True
                 if confirmation_mode:
                     confirmed = False
-                    print "Choices: {0}".format("\t".join(to_write))
-                    choice = 3
-                    while choice < 0 and choice > 1:
-                        try:
-                            choice  = int(raw_input("0. Confirm \n 1. Reclassify"))
-                        except:
-                            print "Wrong input"
-                        if choice == 0: confirmed = True
+                    print "Choices: {0}".format("\t".join(to_write[classifier] for classifier in to_write.keys()))
+                    try:
+                        choice  = int(raw_input("1. Confirm \n 2. Reclassify"))
+                    except:
+                        print "Wrong input"
+                    if choice == 1: confirmed = True
                 if confirmed:
                     for classifier in to_write.keys():
                         classifier_dir = os.path.join(status.data_dir, classifier)
