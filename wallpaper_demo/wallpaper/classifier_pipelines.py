@@ -9,8 +9,10 @@ import os
 from scrapy.contrib.exporter import JsonItemExporter
 from scrapy.exceptions import DropItem
 
-from sciscrapy.status import Status, Reader
-from sciscrapy.classifier import LogisticClassifier, ClassifierCreator
+from sklearn.linear_model import LogisticRegression
+
+from scrapy_sci.status import Status, Reader
+from scrapy_sci.classifier import ClassifierFactory
 
 class ClassifiersPipeline(object):
     
@@ -20,14 +22,13 @@ class ClassifiersPipeline(object):
         self.classifiers = []
         self.exporters = {}
         for classifier in self.status.classifiers.keys():
-            CC = ClassifierCreator(self.status.classifiers[classifier])            
-            if CC.possible:
-                CC.create_data_set("both")
-                lc = CC.create_classifier(LogisticClassifier)
-                lc.train()
-                self.classifiers.append((classifier, lc))
+            CF = ClassifierFactory(self.status.classifiers[classifier])            
+            CF.create_data_set("both")
+            lc = lc = CF.create_classifier(LogisticRegression(C=1e5), self.status.classifiers[classifier]['features']())
+            lc.fit()
+            self.classifiers.append((classifier, lc))
         
-        self.classifiers = sorted(self.classifiers, key = lambda a: a[1].estimate_accuracy(5))
+        self.classifiers = sorted(self.classifiers, key = lambda a: a[1].estimate_accuracy(5, verbose=True))
         print "Classifier {0} needs the most improvement; selected for export".format(self.classifiers[0][0])
         for classification in self.status.classifiers[self.classifiers[0][0]]['classifications']:
             f = file("{0}.json".format(classification), "wb")

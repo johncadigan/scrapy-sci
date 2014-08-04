@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 from time import time
+import os
 
 import numpy as np
+from pylab import *
 np.set_printoptions(threshold=np.nan)
 np.set_printoptions(linewidth=150)
 
@@ -81,7 +83,25 @@ class ClassifierWrapper(object):
         if confusion_matrix:
             print("confusion matrix:")
             print(["{0}:{1}".format(i, category) for (i, category) in enumerate(categories)])
-            print(metrics.confusion_matrix(y_test, pred))
+            conf_arr = metrics.confusion_matrix(y_test, pred)            
+            norm_conf = []
+            for i in conf_arr:
+                a = 0
+                tmp_arr = []
+                a = sum(i, 0)
+                for j in i:
+                        tmp_arr.append(float(j)/float(a))
+                norm_conf.append(tmp_arr)
+            fig = plt.figure()
+            ax = fig.add_subplot(111)
+            res = ax.imshow(array(norm_conf), cmap=cm.jet, interpolation='nearest')
+            for i, cas in enumerate(conf_arr):
+                for j, c in enumerate(cas):
+                    if c>0:
+                        plt.text(j-.2, i+.2, c, fontsize=14)
+            cb = fig.colorbar(res)
+            plt.show()
+            print()
 
         if verbose: print()
         clf_descr = str(self.classifier).split('(')[0]
@@ -110,16 +130,18 @@ class ClassifierFactory(object):
         self.reviewed = True
         self.data_files = {c : {} for c in classifications}
         for classification in classifications:
-            seed = [f for f in self.classifier['seed'] if f.find(classification) == 0]
-            reviewed = [f for f in self.classifier['reviewed'] if f.find(classification) == 0]
-            unreviewed = [f for f in self.classifier['unreviewed'] if f.find(classification) == 0]
+            seed = [f for f in self.classifier['seed'] if f.split(os.sep)[-1].find(classification) == 0]
+            reviewed = [f for f in self.classifier['reviewed'] if f.split(os.sep)[-1].find(classification) == 0]
+            unreviewed = [f for f in self.classifier['unreviewed'] if f.split(os.sep)[-1].find(classification) == 0]
             self.data_files[classification]["seed"]=seed
             self.data_files[classification]["reviewed"]=reviewed                
-            self.data_files[classification]["unreviewed"]=unreviewed
+            self.data_files[classification]["unreviewed"]=unreviewed            
             if len(reviewed) == 0 and len(seed) == 0:
                 self.reviewed = False
             if len(unreviewed) == 0:
                 self.unreviewed = False
+            if len(reviewed) == 0 and len(seed) == 0 and len(unreviewed) == 0:
+                del self.data_files[classification]
             if self.unreviewed == False and self.reviewed == False:
                 self.possible = False
         self.data = [] #Data features
@@ -143,6 +165,7 @@ class ClassifierFactory(object):
                     for datum in Reader.read_seed(fs):
                         self.data.append(datum)
                         self.labels.append(classification)
+        print("{0} items of data".format(len(self.data)))
     
     def test_classifier(self, scikit_classifier, transformer, trials):
         X = transformer.fit_transform(self.data)
@@ -157,6 +180,7 @@ class ClassifierFactory(object):
         X = t.fit_transform(self.data)
         le = preprocessing.LabelEncoder()
         y = le.fit_transform(self.labels)
+        print(le.classes_)
         cw = ClassifierWrapper(scikit_classifier, X, y, le, t)
         return cw
         

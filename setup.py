@@ -32,6 +32,8 @@ setup(
     url='https://github.com/johncadigan/scrapy-sci',
     packages=[
         'scrapy_sci',
+        "scrapy_sci.commands",
+        "scrapy_sci.templates",
     ],
     package_dir={'scrapy_sci':
                  'scrapy_sci'},

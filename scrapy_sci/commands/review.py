@@ -5,8 +5,8 @@ from scrapy.utils.conf import arglist_to_dict
 from scrapy.exceptions import UsageError
 from collections import defaultdict
 import json
-from wallpaper.sciscrapy.status import Status, Reader
-from wallpaper.sciscrapy.classifier import ClassifierFactory
+from scrapy_sci.status import Status, Reader
+from scrapy_sci.classifier import ClassifierFactory
 
 class Command(ScrapyCommand):
 

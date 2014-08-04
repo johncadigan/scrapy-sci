@@ -24,7 +24,7 @@ class Status(object):
         #Find directories
         
         #a !="sciscrapy" is for development only
-        cur_dirs = filter(lambda a: isdir(a) and a !="sciscrapy", os.listdir(os.curdir))
+        cur_dirs = filter(lambda a: isdir(a) and a !="scrapy_sci", os.listdir(os.curdir))
         if len(cur_dirs) == 1 and cur_dirs.count("data") == 0: #In project level folder
             self.data_dir = "{1}{0}{2}{0}{3}".format(os.sep, os.curdir, cur_dirs[0], "data")
             self.project_dir = "{0}".format(cur_dirs[0])

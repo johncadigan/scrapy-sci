@@ -18,8 +18,8 @@ from sklearn.linear_model import PassiveAggressiveClassifier
 from sklearn.naive_bayes import BernoulliNB, MultinomialNB
 
 
-from wallpaper.sciscrapy.status import Status
-from wallpaper.sciscrapy.classifier import ClassifierFactory
+from scrapy_sci.status import Status
+from scrapy_sci.classifier import ClassifierFactory
 
 class Command(ScrapyCommand):
 
@@ -62,7 +62,9 @@ class Command(ScrapyCommand):
             CF.create_data_set("unreviewed")
         results = []
         lc = CF.create_classifier(LogisticRegression(C=1e5), status.classifiers[classifier_name]['features']())
-        results.append(lc.benchmark(opts.topn, opts.print_cm, opts.print_report, verbose=True))
+        lc.benchmark(opts.topn, opts.print_cm, opts.print_report, verbose=True)
+        
+        
         
 ##        for clf, name in (
 ##            (RidgeClassifier(tol=1e-2, solver="lsqr"), "Ridge Classifier"),
@@ -74,23 +76,24 @@ class Command(ScrapyCommand):
 ##            c = CF.create_classifier(clf, status.classifiers[classifier_name]['features']())
 ##            results.append(c.benchmark(opts.topn, opts.print_cm, opts.print_report, verbose=True))        
         
-        indices = np.arange(len(results))
-
-        results = [[x[i] for x in results] for i in range(4)]
-        clf_names, score, training_time, test_time = results
-        training_time = np.array(training_time) / np.max(training_time)
-        test_time = np.array(test_time) / np.max(test_time)
-        plt.figure(figsize=(12, 8))
-        plt.title("Score")
-        plt.barh(indices, score, .2, label="score", color='r')
-        plt.barh(indices + .3, training_time, .2, label="training time", color='g')
-        plt.barh(indices + .6, test_time, .2, label="test time", color='b')
-        plt.yticks(())
-        plt.legend(loc='best')
-        plt.subplots_adjust(left=.25)
-        plt.subplots_adjust(top=.95)
-        plt.subplots_adjust(bottom=.05)
-
-        for i, c in zip(indices, clf_names):
-            plt.text(-.3, i, c)
-        plt.show()
+#Multiple classifier comparison        
+#        results.append(classifier)
+##        indices = np.arange(len(results))
+##        results = [[x[i] for x in results] for i in range(4)]
+##        clf_names, score, training_time, test_time = results
+##        training_time = np.array(training_time) / np.max(training_time)
+##        test_time = np.array(test_time) / np.max(test_time)
+##        plt.figure(figsize=(12, 8))
+##        plt.title("Score")
+##        plt.barh(indices, score, .2, label="score", color='r')
+##        plt.barh(indices + .3, training_time, .2, label="training time", color='g')
+##        plt.barh(indices + .6, test_time, .2, label="test time", color='b')
+##        plt.yticks(())
+##        plt.legend(loc='best')
+##        plt.subplots_adjust(left=.25)
+##        plt.subplots_adjust(top=.95)
+##        plt.subplots_adjust(bottom=.05)
+##
+##        for i, c in zip(indices, clf_names):
+##            plt.text(-.3, i, c)
+##        plt.show()
