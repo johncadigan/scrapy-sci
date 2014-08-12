@@ -47,6 +47,9 @@ class Command(ScrapyCommand):
             os.makedirs("data")
             with open("data/__init__.py", "wb") as package_file:
                 package_file.close()
+        if not os.path.exists("to_upload"):
+            os.makedirs("to_upload")
+            
         #Make classifier file
         moduletpl = join(TEMPLATES_PATH, 'classifier')
         copytree(moduletpl, join(CLASSIFIERS_PATH, classifier_name), ignore=IGNORE)

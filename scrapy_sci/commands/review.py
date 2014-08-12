@@ -1,5 +1,6 @@
 import os
 import sys
+import uuid
 from scrapy.command import ScrapyCommand
 from scrapy.utils.conf import arglist_to_dict
 from scrapy.exceptions import UsageError
@@ -99,10 +100,14 @@ class Command(ScrapyCommand):
                     if choice == 1: confirmed = True
                 if confirmed:
                     for classifier in to_write.keys():
+                        classifications
                         classifier_dir = os.path.join(status.data_dir, classifier)
                         no_files[to_write[classifier]]+=1
                         new_f_name = "{0}0{1}.json".format(to_write[classifier], no_files[to_write[classifier]]) 
                         with open(os.path.join(classifier_dir, new_f_name), "wb") as new_f:
                             new_f.write(json.dumps(item))
+                    item['classifications'] = to_write
+                    with open(os.path.join(status.to_upload_dir, "{0}.json".format(str(uuid.uuid4()))), "wb") as upload_f:
+                        upload_f.write(json.dumps(item))
                     n+=1
                 if n == len(items): sys.exit()

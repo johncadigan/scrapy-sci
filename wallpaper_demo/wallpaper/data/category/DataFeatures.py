@@ -19,6 +19,7 @@ class DataFeatures(DictVectWrapper):
         features = {}
         for color in datum['colors']:
             features['color({0})'.format(color.encode('utf-8'))] = 1.0
+        #features["n_colors"] = float(len(datum['colors']))
         return features
     
     def descriptor_features(self, datum):
@@ -26,6 +27,7 @@ class DataFeatures(DictVectWrapper):
         for descriptor in datum['descriptors']:
             features["tag({0})".format(descriptor.encode('utf-8'))] = 1.0
             if descriptor.encode('utf-8')[0].isupper(): features['named'] = 1.0
+        #features["n_tags"] = float(len(datum['descriptors']))
         return features 
     
     

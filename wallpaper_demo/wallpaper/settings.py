@@ -15,7 +15,8 @@ NEWSPIDER_MODULE = 'wallpaper.spiders'
 DOWNLOAD_DELAY = 2
 COOKIES_ENABLED = False
 AUTOTHROTTLE_ENABLED = True
-ITEM_PIPELINES = {'wallpaper.classifier_pipelines.ClassifiersPipeline': 100,}
+ITEM_PIPELINES = {'wallpaper.duplicate_pipeline.DuplicatesPipeline': 100,
+		  'wallpaper.classifier_pipelines.ClassifiersPipeline': 200,}
 COMMANDS_MODULE = 'scrapy_sci.commands'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
