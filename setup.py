@@ -48,6 +48,7 @@ setup(
         'License :: OSI Approved :: BSD License',
         'Natural Language :: English',
         'Programming Language :: Python :: 2.7',
+        'Framework :: Scrapy',
     ],
     test_suite='tests',
     tests_require=test_requirements
